@@ -12,13 +12,16 @@ interface IncomeModalProps {
   onClose: () => void;
   onSave: (income: Income) => void;
   initialData?: Income;
+  theme?: 'light' | 'dark';
 }
 
-export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSave, initialData }) => {
+export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSave, initialData, theme = 'light' }) => {
   const [mode, setMode] = useState<'manual' | 'scan'>('manual');
-  const [isLoading, setIsLoading] = useState(false);
+  // Разделяем состояния загрузки, чтобы не показывать сообщение про Gemini при обычном сохранении
+  const [isScanning, setIsScanning] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Form State
   const [amount, setAmount] = useState(initialData?.amount.toString() || '');
   const [currency, setCurrency] = useState<'UAH' | 'USD' | 'EUR'>(initialData?.currency || 'UAH');
@@ -38,14 +41,14 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setIsLoading(true);
+    setIsScanning(true);
     setError(null);
 
     const reader = new FileReader();
     reader.onloadend = async () => {
       const base64 = reader.result as string;
       setDocUrl(base64);
-      
+
       try {
         const data = await extractIncomeFromImage(base64);
         setAmount(data.amount.toString());
@@ -57,14 +60,14 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
         setError("Не вдалося розпізнати документ. Будь ласка, введіть дані вручну.");
         setMode('manual');
       } finally {
-        setIsLoading(false);
+        setIsScanning(false);
       }
     };
     reader.readAsDataURL(file);
   };
 
   const handleAttachmentsUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
+    const files: File[] = Array.from(e.target.files || []);
     if (!files.length) return;
 
     files.forEach((file) => {
@@ -81,20 +84,32 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
     e.preventDefault();
     if (!amount || !date) return;
 
-    setIsLoading(true);
+    setIsSaving(true);
     try {
-      const numericAmount = parseFloat(amount);
+      // Ensure we have a valid number
+      const numericAmount = parseFloat(amount.toString().replace(',', '.'));
+      if (isNaN(numericAmount)) {
+        setError("Будь ласка, введіть коректну суму");
+        setIsSaving(false);
+        return;
+      }
+
       let amountUah: number | undefined = undefined;
 
       if (currency === 'UAH') {
+        // Для UAH явно устанавливаем amountUah = amount
         amountUah = numericAmount;
       } else {
+        // Для USD/EUR конвертируем по курсу НБУ на дату транзакции
         try {
           const rate = await getNbuRateToUah(currency, date);
           amountUah = numericAmount * rate;
         } catch (err) {
-          // Якщо курс не вдалося отримати — залишимо без конвертації
+          // Якщо курс не вдалося отримати — показуємо попередження, але все одно зберігаємо транзакцію
           console.error('NBU rate error', err);
+          setError(`Не вдалося отримати курс НБУ для ${currency}. Транзакцію буде збережено без конвертації в гривні. Ви можете додати курс вручну пізніше.`);
+          // Продолжаем сохранение без amountUah
+          amountUah = undefined;
         }
       }
 
@@ -113,11 +128,11 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
         attachments: attachments.length ? attachments : undefined,
       };
 
-      onSave(income);
+      await onSave(income);
       resetForm();
       onClose();
     } finally {
-      setIsLoading(false);
+      setIsSaving(false);
     }
   };
 
@@ -134,39 +149,37 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white dark:bg-[#0a0a0a] rounded-2xl shadow-xl w-full max-w-md overflow-hidden border dark:border-[#1a1a1a]">
-        
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+      <div className={`${theme === 'dark' ? 'bg-[#0a0a0a] border-[#1a1a1a]' : 'bg-white border-slate-200'} rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-hidden border my-auto`}>
+
         {/* Header */}
-        <div className="px-6 py-4 border-b dark:border-[#1a1a1a] flex justify-between items-center bg-slate-50 dark:bg-[#111111]">
-          <h2 className="text-lg font-semibold text-slate-800 dark:text-white">
+        <div className={`px-6 py-4 border-b ${theme === 'dark' ? 'border-[#1a1a1a] bg-[#111111]' : 'border-slate-200 bg-white'} flex justify-between items-center sticky top-0 z-10`}>
+          <h2 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>
             {initialData ? 'Редагувати транзакцію' : 'Додати дохід'}
           </h2>
-          <button onClick={onClose} className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300">
+          <button onClick={onClose} className={theme === 'dark' ? 'text-slate-400 hover:text-slate-300' : 'text-slate-500 hover:text-slate-600'}>
             <X size={20} />
           </button>
         </div>
 
-        <div className="p-6 dark:bg-[#0a0a0a]">
+        <div className={`p-6 ${theme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-white'} overflow-y-auto max-h-[calc(90vh-80px)]`}>
           {/* Mode Switcher */}
           {!initialData && (
-            <div className="flex bg-slate-100 dark:bg-[#111111] p-1 rounded-lg mb-6">
-              <button 
-                className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
-                  mode === 'manual' 
-                    ? 'bg-white dark:bg-[#1a1a1a] shadow text-blue-600 dark:text-blue-400' 
-                    : 'text-slate-500 dark:text-slate-400'
-                }`}
+            <div className={`flex ${theme === 'dark' ? 'bg-[#111111]' : 'bg-slate-100'} p-1 rounded-lg mb-6`}>
+              <button
+                className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${mode === 'manual'
+                  ? `${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-white'} shadow text-blue-600`
+                  : theme === 'dark' ? 'text-slate-400' : 'text-slate-500'
+                  }`}
                 onClick={() => setMode('manual')}
               >
                 Вручну
               </button>
-              <button 
-                className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
-                  mode === 'scan' 
-                    ? 'bg-white dark:bg-[#1a1a1a] shadow text-blue-600 dark:text-blue-400' 
-                    : 'text-slate-500 dark:text-slate-400'
-                }`}
+              <button
+                className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${mode === 'scan'
+                  ? `${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-white'} shadow text-blue-600`
+                  : theme === 'dark' ? 'text-slate-400' : 'text-slate-500'
+                  }`}
                 onClick={() => setMode('scan')}
               >
                 Скан AI
@@ -175,25 +188,30 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
           )}
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg">
+            <div className={`mb-4 p-3 ${theme === 'dark' ? 'bg-red-900/30 text-red-300 border-red-800' : 'bg-red-50 text-red-600 border-red-200'} border text-sm rounded-lg`}>
               {error}
             </div>
           )}
 
-          {isLoading ? (
+          {isScanning ? (
             <div className="py-12 flex flex-col items-center justify-center text-slate-500">
               <Loader2 className="animate-spin mb-3 text-blue-600" size={32} />
               <p>Gemini аналізує документ...</p>
             </div>
+          ) : isSaving ? (
+            <div className="py-8 flex flex-col items-center justify-center text-slate-500">
+              <Loader2 className="animate-spin mb-3 text-blue-600" size={28} />
+              <p>Збереження транзакції...</p>
+            </div>
           ) : mode === 'scan' ? (
             <div className="py-8 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer"
-                 onClick={() => fileInputRef.current?.click()}>
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                className="hidden" 
-                accept="image/*,.pdf" 
-                onChange={handleFileUpload} 
+              onClick={() => fileInputRef.current?.click()}>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*,.pdf"
+                onChange={handleFileUpload}
               />
               <div className="bg-blue-100 p-4 rounded-full mb-3">
                 <Camera className="text-blue-600" size={32} />
@@ -204,18 +222,27 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               {docUrl && (
-                <div className="mb-4 p-3 bg-blue-50 text-blue-800 text-sm rounded-lg flex items-center gap-2">
-                   <Check size={16} /> Документ розпізнано. Перевірте дані.
+                <div className={`mb-4 p-4 rounded-lg flex items-center gap-3 border-2 ${theme === 'dark'
+                    ? 'bg-blue-900/40 text-blue-100 border-blue-700'
+                    : 'bg-blue-50 text-blue-900 border-blue-300'
+                  }`}>
+                  <div className={`p-1.5 rounded-full ${theme === 'dark' ? 'bg-blue-800' : 'bg-blue-100'
+                    }`}>
+                    <Check size={18} className={theme === 'dark' ? 'text-blue-200' : 'text-blue-600'} />
+                  </div>
+                  <p className={`text-sm font-medium ${theme === 'dark' ? 'text-blue-100' : 'text-blue-900'}`}>
+                    Документ розпізнано. Перевірте дані та натисніть "Зберегти".
+                  </p>
                 </div>
               )}
-              
+
               <div>
                 <label className="block text-xs font-medium text-slate-500 mb-1">Сума</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                     <span className="text-slate-400 text-sm font-bold">
-                       {currency === 'UAH' ? '₴' : currency === 'USD' ? '$' : '€'}
-                     </span>
+                    <span className="text-slate-400 text-sm font-bold">
+                      {currency === 'UAH' ? '₴' : currency === 'USD' ? '$' : '€'}
+                    </span>
                   </div>
                   <input
                     type="number"
@@ -223,11 +250,11 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
                     required
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="pl-8 w-full p-2.5 bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-[#1a1a1a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
+                    className={`pl-8 w-full p-2.5 ${theme === 'dark' ? 'bg-[#111111] border-[#1a1a1a] text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'} border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all`}
                     placeholder="0.00"
                   />
-                  <select 
-                    value={currency} 
+                  <select
+                    value={currency}
                     onChange={(e) => setCurrency(e.target.value as any)}
                     className="absolute inset-y-0 right-0 pr-3 bg-transparent text-slate-500 text-sm font-medium outline-none"
                   >
@@ -247,7 +274,7 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
                     required
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="pl-10 w-full p-2.5 bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-[#1a1a1a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 dark:text-white"
+                    className={`pl-10 w-full p-2.5 ${theme === 'dark' ? 'bg-[#111111] border-[#1a1a1a] text-white' : 'bg-slate-50 border-slate-200 text-slate-900'} border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none`}
                   />
                 </div>
               </div>
@@ -260,7 +287,7 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
                     type="text"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="pl-10 w-full p-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
+                    className={`pl-10 w-full p-2.5 ${theme === 'dark' ? 'bg-[#111111] border-[#1a1a1a] text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'} border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none`}
                     placeholder="напр. Розробка ПЗ"
                   />
                 </div>
@@ -274,7 +301,7 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
                   type="text"
                   value={clientOrProject}
                   onChange={(e) => setClientOrProject(e.target.value)}
-                  className="w-full p-2.5 bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-[#1a1a1a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
+                  className={`w-full p-2.5 ${theme === 'dark' ? 'bg-[#111111] border-[#1a1a1a] text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'} border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm`}
                   placeholder="напр. Компанія ABC / Проєкт CRM"
                 />
               </div>
@@ -287,7 +314,7 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
                   type="text"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full p-2.5 bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-[#1a1a1a] rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
+                  className={`w-full p-2.5 ${theme === 'dark' ? 'bg-[#111111] border-[#1a1a1a] text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'} border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm`}
                   placeholder="напр. Розробка ПЗ, Консалтинг..."
                 />
               </div>
@@ -299,7 +326,7 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
                 <textarea
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
-                  className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm resize-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
+                  className={`w-full p-2.5 ${theme === 'dark' ? 'bg-[#111111] border-[#1a1a1a] text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'} border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm resize-none`}
                   rows={3}
                   placeholder="Будь-які додаткові деталі по угоді"
                 />
@@ -330,8 +357,8 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
                 )}
               </div>
 
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl shadow-lg shadow-blue-600/20 transition-all active:scale-[0.98] mt-4"
               >
                 Зберегти

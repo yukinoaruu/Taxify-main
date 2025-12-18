@@ -18,6 +18,8 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     try {
       setError(null);
       setIsLoading(true);
+
+      // Используем стандартный popup OAuth (работает и в Telegram Mini App)
       await authService.loginWithGoogle();
       onLoginSuccess();
     } catch (e) {
@@ -31,6 +33,8 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     try {
       setError(null);
       setIsLoading(true);
+
+      // Используем стандартный popup OAuth (работает и в Telegram Mini App)
       await authService.loginWithApple();
       onLoginSuccess();
     } catch (e) {

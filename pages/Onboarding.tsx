@@ -39,7 +39,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6">
       <div className="max-w-md w-full">
-        
+
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl shadow-lg shadow-blue-600/30 mb-4">
             <Briefcase className="text-white" size={32} />
@@ -52,18 +52,18 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
           {step === 1 && (
             <div className="space-y-6">
               <h2 className="text-xl font-semibold text-slate-800">Про вас</h2>
-              
+
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">ПІБ</label>
                 <div className="relative">
-                   <User className="absolute left-3 top-3 text-slate-400" size={18} />
-                   <input 
-                    type="text" 
+                  <User className="absolute left-3 top-3 text-slate-400" size={18} />
+                  <input
+                    type="text"
                     className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
                     placeholder="Шевченко Тарас Григорович"
                     value={profile.name}
-                    onChange={(e) => setProfile({...profile, name: e.target.value})}
-                   />
+                    onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                  />
                 </div>
               </div>
 
@@ -73,7 +73,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                   {[1, 2, 3].map((g) => (
                     <button
                       key={g}
-                      onClick={() => setProfile({...profile, group: g})}
+                      onClick={() => setProfile({ ...profile, group: g })}
                       className={`py-3 rounded-xl border-2 font-medium transition-all ${profile.group === g ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}
                     >
                       Група {g}
@@ -85,7 +85,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                 </p>
               </div>
 
-              <button 
+              <button
                 onClick={() => setStep(2)}
                 disabled={!profile.name}
                 className="w-full bg-slate-900 text-white py-4 rounded-xl font-medium mt-4 disabled:opacity-50 hover:bg-slate-800 transition-all"
@@ -97,56 +97,56 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
           {step === 2 && (
             <div className="space-y-6">
-               <h2 className="text-xl font-semibold text-slate-800">Податки</h2>
+              <h2 className="text-xl font-semibold text-slate-800">Податки</h2>
 
-               {profile.group === 3 && (
-                 <div>
-                   <label className="block text-sm font-medium text-slate-700 mb-2">Ставка податку</label>
-                   <div className="grid grid-cols-2 gap-3">
-                     <button
-                        onClick={() => setProfile({...profile, taxRate: TaxRate.PERCENT_5})}
-                        className={`py-3 rounded-xl border-2 font-medium transition-all ${profile.taxRate === TaxRate.PERCENT_5 ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-500'}`}
-                      >
-                        5% (Без ПДВ)
-                      </button>
-                      <button
-                        onClick={() => setProfile({...profile, taxRate: TaxRate.PERCENT_3})}
-                        className={`py-3 rounded-xl border-2 font-medium transition-all ${profile.taxRate === TaxRate.PERCENT_3 ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-500'}`}
-                      >
-                        3% (+ ПДВ)
-                      </button>
-                   </div>
-                 </div>
-               )}
+              {profile.group === 3 && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Ставка податку</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => setProfile({ ...profile, taxRate: TaxRate.PERCENT_5 })}
+                      className={`py-3 rounded-xl border-2 font-medium transition-all ${profile.taxRate === TaxRate.PERCENT_5 ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-500'}`}
+                    >
+                      5% (Без ПДВ)
+                    </button>
+                    <button
+                      onClick={() => setProfile({ ...profile, taxRate: TaxRate.PERCENT_3 })}
+                      className={`py-3 rounded-xl border-2 font-medium transition-all ${profile.taxRate === TaxRate.PERCENT_3 ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-500'}`}
+                    >
+                      3% (+ ПДВ)
+                    </button>
+                  </div>
+                </div>
+              )}
 
-               <div>
-                 <label className="block text-sm font-medium text-slate-700 mb-2">Чи є у вас співробітники?</label>
-                 <div className="flex gap-4">
-                   <label className="flex items-center p-4 border rounded-xl flex-1 cursor-pointer hover:bg-slate-50">
-                     <input 
-                      type="radio" 
-                      name="employees" 
-                      checked={profile.hasEmployees} 
-                      onChange={() => setProfile({...profile, hasEmployees: true})}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Чи є у вас співробітники?</label>
+                <div className="flex gap-4">
+                  <label className="flex items-center p-4 border rounded-xl flex-1 cursor-pointer hover:bg-slate-50">
+                    <input
+                      type="radio"
+                      name="employees"
+                      checked={profile.hasEmployees}
+                      onChange={() => setProfile({ ...profile, hasEmployees: true })}
                       className="w-5 h-5 text-blue-600"
-                     />
-                     <span className="ml-3 font-medium text-slate-700">Так</span>
-                   </label>
-                   <label className="flex items-center p-4 border rounded-xl flex-1 cursor-pointer hover:bg-slate-50">
-                     <input 
-                      type="radio" 
-                      name="employees" 
-                      checked={!profile.hasEmployees} 
-                      onChange={() => setProfile({...profile, hasEmployees: false})}
+                    />
+                    <span className="ml-3 font-medium text-slate-700">Так</span>
+                  </label>
+                  <label className="flex items-center p-4 border rounded-xl flex-1 cursor-pointer hover:bg-slate-50">
+                    <input
+                      type="radio"
+                      name="employees"
+                      checked={!profile.hasEmployees}
+                      onChange={() => setProfile({ ...profile, hasEmployees: false })}
                       className="w-5 h-5 text-blue-600"
-                     />
-                     <span className="ml-3 font-medium text-slate-700">Ні</span>
-                   </label>
-                 </div>
-                 <p className="text-xs text-slate-400 mt-2">Впливає на розрахунок ЄСВ.</p>
-               </div>
+                    />
+                    <span className="ml-3 font-medium text-slate-700">Ні</span>
+                  </label>
+                </div>
+                <p className="text-xs text-slate-400 mt-2">Впливає на розрахунок ЄСВ.</p>
+              </div>
 
-               <button 
+              <button
                 onClick={handleSave}
                 className="w-full bg-blue-600 text-white py-4 rounded-xl font-medium mt-4 shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all"
               >

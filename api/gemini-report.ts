@@ -17,7 +17,7 @@ export default async function handler(request: Request): Promise<Response> {
     };
 
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-1.5-flash",
       contents: `Згенеруй текст для звіту: "${reportType}".
       Дані для звіту:
       ${dataSummary}
@@ -44,5 +44,4 @@ export default async function handler(request: Request): Promise<Response> {
     );
   }
 }
-
 

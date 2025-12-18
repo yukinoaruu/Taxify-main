@@ -46,27 +46,41 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile, theme }) => {
   const now = new Date();
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
-  
-  const filteredIncomes = period === 'month' 
-    ? incomes.filter(inc => {
-        const incDate = new Date(inc.date);
-        return incDate.getMonth() === currentMonth && incDate.getFullYear() === currentYear;
-      })
-    : incomes;
 
-  // --- Calculations 2026 ---
+  const filteredIncomes = React.useMemo(() => {
+    return incomes.filter(inc => {
+      // inc.date is expected to be "YYYY-MM-DD"
+      if (!inc.date || typeof inc.date !== 'string') return false;
+
+      const parts = inc.date.trim().split('-');
+      if (parts.length < 2) return false;
+
+      const y = parseInt(parts[0]);
+      const m = parseInt(parts[1]);
+
+      const isSameYear = y === currentYear;
+
+      if (period === 'year') return isSameYear;
+
+      const isSameMonth = m === (currentMonth + 1);
+      return isSameYear && isSameMonth;
+    });
+  }, [incomes, period, currentMonth, currentYear]);
+
+  // --- Calculations ---
+  // Берём amountUah если есть, иначе amount (для старых транзакций или UAH без amountUah)
   const totalIncome = filteredIncomes.reduce((sum, i) => {
-    // Використовуємо amountUah якщо є, інакше amount (для UAH транзакцій)
-    const amountInUah = i.amountUah ?? (i.currency === 'UAH' ? i.amount : 0);
-    return sum + amountInUah;
+    // Data is already sanitized in dbService, but double check doesn't hurt
+    const val = i.amountUah ?? i.amount;
+    return sum + (val || 0);
   }, 0);
-  
+
   const limit = FOP_LIMITS[profile.group];
   const limitUsed = Math.max(totalIncome, 0);
   const limitRemainingRaw = limit - limitUsed;
   const limitRemaining = Math.max(limitRemainingRaw, 0);
   const limitPercent = limit > 0 ? Math.min((limitUsed / limit) * 100, 100) : 0;
-  
+
   // Tax Calculation Logic
   let estimatedTaxDisplay = 0;
   let taxLabel = "Податок";
@@ -96,7 +110,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile, theme }) => {
     const fixedTax = profile.group === FopGroup.GROUP_1 ? TAX_FIXED_G1 : TAX_FIXED_G2;
     estimatedTaxDisplay = fixedTax + MILITARY_LEVY_FIXED;
     esvPeriodAmount = period === 'month' ? MONTHLY_ESV : MONTHLY_ESV * 12;
-    periodTaxTotal = period === 'month' 
+    periodTaxTotal = period === 'month'
       ? fixedTax + MILITARY_LEVY_FIXED + MONTHLY_ESV
       : (fixedTax + MILITARY_LEVY_FIXED + MONTHLY_ESV) * 12;
     taxLabel = "Щомісячний платіж (ЄП + ВЗ)";
@@ -120,10 +134,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile, theme }) => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className={`text-3xl md:text-4xl font-bold ${textColor}`}>Огляд 2026</h1>
-          <p className={`${textMuted} text-base md:text-lg mt-1`}>Вітаємо, {profile.name}</p>
+          <h1 className={`text-3xl md:text-4xl font-bold ${textColor}`}>ФОП 2026</h1>
+          <p className={`${textMuted} text-base md:text-lg mt-1`}>Вітаємо, {profile.name}!</p>
         </div>
-        <button 
+        <button
           onClick={() => setIsModalOpen(true)}
           className="bg-blue-600 text-white px-4 py-3 md:px-6 md:py-3.5 rounded-xl shadow-lg shadow-blue-600/30 hover:bg-blue-700 transition-all flex items-center gap-2 text-base md:text-lg font-medium"
         >
@@ -169,29 +183,27 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile, theme }) => {
         <div className="flex gap-3">
           <button
             onClick={() => setPeriod('month')}
-            className={`px-6 py-2.5 rounded-lg text-base font-medium transition-colors ${
-              period === 'month'
-                ? theme === 'dark'
-                  ? 'bg-white text-black'
-                  : 'bg-blue-600 text-white'
-                : theme === 'dark'
-                  ? 'bg-[#1a1a1a] text-slate-300 hover:bg-[#222222]'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
+            className={`px-6 py-2.5 rounded-lg text-base font-medium transition-colors ${period === 'month'
+              ? theme === 'dark'
+                ? 'bg-white text-black'
+                : 'bg-blue-600 text-white'
+              : theme === 'dark'
+                ? 'bg-[#1a1a1a] text-slate-300 hover:bg-[#222222]'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
           >
             Місяць
           </button>
           <button
             onClick={() => setPeriod('year')}
-            className={`px-6 py-2.5 rounded-lg text-base font-medium transition-colors ${
-              period === 'year'
-                ? theme === 'dark'
-                  ? 'bg-white text-black'
-                  : 'bg-blue-600 text-white'
-                : theme === 'dark'
-                  ? 'bg-[#1a1a1a] text-slate-300 hover:bg-[#222222]'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
+            className={`px-6 py-2.5 rounded-lg text-base font-medium transition-colors ${period === 'year'
+              ? theme === 'dark'
+                ? 'bg-white text-black'
+                : 'bg-blue-600 text-white'
+              : theme === 'dark'
+                ? 'bg-[#1a1a1a] text-slate-300 hover:bg-[#222222]'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
           >
             Рік
           </button>
@@ -210,6 +222,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile, theme }) => {
               <h3 className={`text-3xl md:text-4xl font-bold ${textColor} mt-2`}>
                 ₴ {totalIncome.toLocaleString()}
               </h3>
+              {totalIncome === 0 && incomes.length > 0 && (
+                <p className="text-amber-500 text-[10px] mt-1 leading-tight">
+                  Є транзакції поза межами {period === 'month' ? 'цього місяця' : 'цього року'}
+                </p>
+              )}
             </div>
             <div className={`p-3 rounded-xl ${theme === 'dark' ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-600'}`}>
               <TrendingUp size={24} />
@@ -221,7 +238,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile, theme }) => {
               style={{ width: `${limitPercent.toFixed(0)}%` }}
             ></div>
           </div>
-          <p className={`text-xs md:text-sm ${textMuted} mt-3`}>Оновлено щойно</p>
+          <p className={`text-xs md:text-sm ${textMuted} mt-3`}></p>
         </div>
 
         {/* Taxes Card */}
@@ -291,45 +308,45 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile, theme }) => {
 
         {/* Limit Warning Card */}
         <div className={`${bgCard} p-6 md:p-8 rounded-2xl shadow-sm border flex flex-col justify-between`}>
-           <div className="flex justify-between items-center mb-4">
-             <p className={`text-sm md:text-base font-medium ${textMuted}`}>Ліміт ФОП 2026</p>
-             {limitPercent > 80 && <AlertTriangle size={20} className="text-amber-500" />}
-           </div>
-           
-           <div className="flex items-center gap-6">
-             <div className="h-28 w-28 md:h-32 md:w-32 relative">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={limitData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={35}
-                      outerRadius={45}
-                      startAngle={90}
-                      endAngle={-270}
-                      paddingAngle={0}
-                      dataKey="value"
-                      stroke="none"
-                    >
-                      {limitData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className={`text-sm md:text-base font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-700'}`}>
-                    {limitPercent.toFixed(1)}%
-                  </span>
-                </div>
-             </div>
-             <div>
-               <p className={`text-xs md:text-sm ${textMuted}`}>Залишок</p>
-               <p className={`font-bold text-lg md:text-xl ${theme === 'dark' ? 'text-white' : 'text-slate-800'} mt-1`}>₴ {limitRemaining.toLocaleString()}</p>
-               <p className={`text-xs md:text-sm ${textMuted} mt-2`}>Ліміт: {(limit / 1000000).toFixed(2)}М</p>
-             </div>
-           </div>
+          <div className="flex justify-between items-center mb-4">
+            <p className={`text-sm md:text-base font-medium ${textMuted}`}>Ліміт ФОП 2026</p>
+            {limitPercent > 80 && <AlertTriangle size={20} className="text-amber-500" />}
+          </div>
+
+          <div className="flex items-center gap-6">
+            <div className="h-28 w-28 md:h-32 md:w-32 relative">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={limitData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={35}
+                    outerRadius={45}
+                    startAngle={90}
+                    endAngle={-270}
+                    paddingAngle={0}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {limitData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className={`text-sm md:text-base font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-700'}`}>
+                  {limitPercent.toFixed(1)}%
+                </span>
+              </div>
+            </div>
+            <div>
+              <p className={`text-xs md:text-sm ${textMuted}`}>Залишок</p>
+              <p className={`font-bold text-lg md:text-xl ${theme === 'dark' ? 'text-white' : 'text-slate-800'} mt-1`}>₴ {limitRemaining.toLocaleString()}</p>
+              <p className={`text-xs md:text-sm ${textMuted} mt-2`}>Ліміт: {(limit / 1000000).toFixed(2)}М</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -341,52 +358,50 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile, theme }) => {
             <p className={`text-center ${textMuted} py-12 text-base`}>Транзакцій поки немає.</p>
           ) : (
             incomes.slice(0, 5).map(inc => (
-              <div 
-                key={inc.id} 
-                className={`flex items-center justify-between p-4 rounded-xl transition-colors ${
-                  theme === 'dark' 
-                    ? 'hover:bg-[#1a1a1a]' 
-                    : 'hover:bg-slate-50'
-                }`}
+              <div
+                key={inc.id}
+                className={`flex items-center justify-between p-4 rounded-xl transition-colors ${theme === 'dark'
+                  ? 'hover:bg-[#1a1a1a]'
+                  : 'hover:bg-slate-50'
+                  }`}
               >
-                 <div className="flex items-center gap-4">
-                   <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
-                     theme === 'dark' 
-                       ? 'bg-blue-900/30 text-blue-400' 
-                       : 'bg-blue-50 text-blue-600'
-                   }`}>
-                     {inc.currency === 'UAH' ? '₴' : inc.currency === 'USD' ? '$' : '€'}
-                   </div>
-                   <div>
-                     <p className={`font-medium text-base ${textColor}`}>{inc.description || "Дохід"}</p>
-                     <p className={`text-sm ${textMuted}`}>{inc.date}</p>
-                   </div>
-                 </div>
-                 <div className="text-right">
-                   <p className={`font-bold text-base ${textColor}`}>+{inc.amount.toLocaleString()} {inc.currency}</p>
-                   {inc.amountUah && (
-                     <p className={`text-xs ${textMuted} mt-0.5`}>
-                       ≈ ₴ {inc.amountUah.toLocaleString('uk-UA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                     </p>
-                   )}
-                   <p className={`text-xs px-2 py-1 rounded-full inline-block mt-1 ${
-                     theme === 'dark' 
-                       ? 'text-blue-400 bg-blue-900/30' 
-                       : 'text-blue-600 bg-blue-50'
-                   }`}>
-                     {inc.source === 'ai-scan' ? 'AI' : 'Вручну'}
-                   </p>
-                 </div>
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${theme === 'dark'
+                    ? 'bg-blue-900/30 text-blue-400'
+                    : 'bg-blue-50 text-blue-600'
+                    }`}>
+                    {inc.currency === 'UAH' ? '₴' : inc.currency === 'USD' ? '$' : '€'}
+                  </div>
+                  <div>
+                    <p className={`font-medium text-base ${textColor}`}>{inc.description || "Дохід"}</p>
+                    <p className={`text-sm ${textMuted}`}>{inc.date}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className={`font-bold text-base ${textColor}`}>+{inc.amount.toLocaleString()} {inc.currency}</p>
+                  {inc.amountUah && (
+                    <p className={`text-xs ${textMuted} mt-0.5`}>
+                      ≈ ₴ {inc.amountUah.toLocaleString('uk-UA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </p>
+                  )}
+                  <p className={`text-xs px-2 py-1 rounded-full inline-block mt-1 ${theme === 'dark'
+                    ? 'text-blue-400 bg-blue-900/30'
+                    : 'text-blue-600 bg-blue-50'
+                    }`}>
+                    {inc.source === 'ai-scan' ? 'AI' : 'Вручну'}
+                  </p>
+                </div>
               </div>
             ))
           )}
         </div>
       </div>
 
-      <IncomeModal 
-        isOpen={isModalOpen} 
+      <IncomeModal
+        isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveIncome}
+        theme={theme}
       />
     </div>
   );

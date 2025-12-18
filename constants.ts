@@ -8,7 +8,7 @@ export const FOP_LIMITS = {
 };
 
 // 2026 Tax Configuration
-export const MONTHLY_ESV = 1902.34; 
+export const MONTHLY_ESV = 1902.34;
 export const MILITARY_LEVY_FIXED = 864.70; // For Group 1 & 2
 export const MILITARY_LEVY_RATE_G3 = 0.01; // 1% for Group 3
 export const TAX_FIXED_G1 = 332.80;

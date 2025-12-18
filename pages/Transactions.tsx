@@ -75,11 +75,10 @@ export const Transactions: React.FC<TransactionsProps> = ({ profile, onOpenDetai
         </div>
         <div className="flex flex-wrap gap-3">
           <select
-            className={`border rounded-lg px-3 py-2 text-sm ${
-              theme === 'dark' 
-                ? 'bg-[#0a0a0a] border-[#1a1a1a] text-white' 
+            className={`border rounded-lg px-3 py-2 text-sm ${theme === 'dark'
+                ? 'bg-[#0a0a0a] border-[#1a1a1a] text-white'
                 : 'bg-white border-slate-200 text-slate-900'
-            }`}
+              }`}
             value={monthFilter}
             onChange={(e) => setMonthFilter(e.target.value)}
           >
@@ -91,11 +90,10 @@ export const Transactions: React.FC<TransactionsProps> = ({ profile, onOpenDetai
             ))}
           </select>
           <button
-            className={`border rounded-lg px-3 py-2 text-sm transition-colors ${
-              theme === 'dark' 
-                ? 'bg-[#0a0a0a] border-[#1a1a1a] text-white hover:bg-[#1a1a1a]' 
+            className={`border rounded-lg px-3 py-2 text-sm transition-colors ${theme === 'dark'
+                ? 'bg-[#0a0a0a] border-[#1a1a1a] text-white hover:bg-[#1a1a1a]'
                 : 'bg-white border-slate-200 text-slate-900 hover:bg-slate-50'
-            }`}
+              }`}
             onClick={() => setSortByAmountDesc((prev) => !prev)}
           >
             Сума: {sortByAmountDesc ? 'від більшої' : 'від меншої'}
@@ -113,11 +111,10 @@ export const Transactions: React.FC<TransactionsProps> = ({ profile, onOpenDetai
             filtered.map((inc) => (
               <div
                 key={inc.id}
-                className={`${bgCard} border rounded-xl p-4 flex items-center justify-between transition cursor-pointer overflow-hidden ${
-                  theme === 'dark' 
-                    ? 'hover:bg-slate-700' 
+                className={`${bgCard} border rounded-xl p-4 flex items-center justify-between transition cursor-pointer overflow-hidden ${theme === 'dark'
+                    ? 'hover:bg-slate-700'
                     : 'hover:shadow-sm hover:bg-slate-50'
-                }`}
+                  }`}
                 onClick={() => {
                   if (hasLongPressed) return;
                   onOpenDetails(inc);
@@ -173,11 +170,10 @@ export const Transactions: React.FC<TransactionsProps> = ({ profile, onOpenDetai
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
-                    theme === 'dark' 
-                      ? 'bg-blue-900/30 text-blue-400' 
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${theme === 'dark'
+                      ? 'bg-blue-900/30 text-blue-400'
                       : 'bg-blue-50 text-blue-600'
-                  }`}>
+                    }`}>
                     {inc.currency === 'UAH' ? '₴' : inc.currency === 'USD' ? '$' : '€'}
                   </div>
                   <div>
@@ -197,11 +193,10 @@ export const Transactions: React.FC<TransactionsProps> = ({ profile, onOpenDetai
                         ≈ ₴ {inc.amountUah.toFixed(2)}
                       </p>
                     )}
-                    <p className={`text-xs px-2 py-0.5 rounded-full inline-block mt-0.5 ${
-                      theme === 'dark' 
-                        ? 'text-blue-400 bg-blue-900/30' 
+                    <p className={`text-xs px-2 py-0.5 rounded-full inline-block mt-0.5 ${theme === 'dark'
+                        ? 'text-blue-400 bg-blue-900/30'
                         : 'text-blue-600 bg-blue-50'
-                    }`}>
+                      }`}>
                       {inc.source === 'ai-scan' ? 'AI' : 'Вручну'}
                     </p>
                   </div>
@@ -222,11 +217,10 @@ export const Transactions: React.FC<TransactionsProps> = ({ profile, onOpenDetai
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className={`w-full border rounded-lg px-2 py-1.5 text-sm ${
-                  theme === 'dark' 
-                    ? 'bg-[#111111] border-[#1a1a1a] text-white' 
+                className={`w-full border rounded-lg px-2 py-1.5 text-sm ${theme === 'dark'
+                    ? 'bg-[#111111] border-[#1a1a1a] text-white'
                     : 'bg-white border-slate-200 text-slate-900'
-                }`}
+                  }`}
               />
             </div>
             <div>
@@ -235,20 +229,18 @@ export const Transactions: React.FC<TransactionsProps> = ({ profile, onOpenDetai
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className={`w-full border rounded-lg px-2 py-1.5 text-sm ${
-                  theme === 'dark' 
-                    ? 'bg-[#111111] border-[#1a1a1a] text-white' 
+                className={`w-full border rounded-lg px-2 py-1.5 text-sm ${theme === 'dark'
+                    ? 'bg-[#111111] border-[#1a1a1a] text-white'
                     : 'bg-white border-slate-200 text-slate-900'
-                }`}
+                  }`}
               />
             </div>
           </div>
           <button
-            className={`w-full text-xs mt-2 transition-colors ${
-              theme === 'dark' 
-                ? 'text-slate-400 hover:text-slate-300' 
+            className={`w-full text-xs mt-2 transition-colors ${theme === 'dark'
+                ? 'text-slate-400 hover:text-slate-300'
                 : 'text-slate-500 hover:text-slate-700'
-            }`}
+              }`}
             onClick={() => {
               setFromDate('');
               setToDate('');
@@ -262,5 +254,4 @@ export const Transactions: React.FC<TransactionsProps> = ({ profile, onOpenDetai
     </div>
   );
 };
-
 

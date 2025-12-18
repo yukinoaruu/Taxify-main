@@ -5,7 +5,7 @@
  * из консоли Firebase (раздел Project Settings → Your apps → Web app).
  */
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, OAuthProvider, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 // TODO: Замените плейсхолдеры на реальные значения из Firebase Console.
@@ -21,8 +21,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
+// Устанавливаем persistence для работы на разных устройствах
+setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.error('Failed to set auth persistence:', error);
+});
+
 export const googleProvider = new GoogleAuthProvider();
+// Добавляем дополнительные scopes для получения email и профиля
+googleProvider.addScope('email');
+googleProvider.addScope('profile');
+
 export const appleProvider = new OAuthProvider("apple.com");
 export const db = getFirestore(app);
-
 

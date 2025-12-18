@@ -18,6 +18,18 @@ const getCurrentUserId = (): string | null => {
 };
 
 /**
+ * Очищує рядок від пробілів та замінює кому на крапку для коректного перетворення в число.
+ */
+const cleanNumber = (val: any): number => {
+  if (typeof val === 'number') return val;
+  if (!val) return 0;
+  // Видаляємо всі пробіли (включаючи нерозривні) та замінюємо кому на крапку
+  const cleaned = String(val).replace(/[\s\u00A0]/g, '').replace(',', '.');
+  const num = parseFloat(cleaned);
+  return isNaN(num) ? 0 : num;
+};
+
+/**
  * Сервис доступа к данным пользователя в Firestore (профиль, доходы, алерты).
  */
 export const dbService = {
@@ -69,9 +81,15 @@ export const dbService = {
     const incomes: Income[] = [];
     snapshot.forEach((docSnap) => {
       const data = docSnap.data() as Income & { userId: string };
+      // Ensure amount is a number (cleaning spaces/commas)
+      const safeAmount = cleanNumber(data.amount);
+      const safeAmountUah = data.amountUah !== undefined ? cleanNumber(data.amountUah) : undefined;
+
       incomes.push({
         ...data,
         id: data.id,
+        amount: safeAmount,
+        amountUah: safeAmountUah,
       });
     });
 
@@ -89,20 +107,35 @@ export const dbService = {
 
     const incomesRef = collection(db, "incomes");
 
-    // Firestore не любить undefined — видаляємо такі поля з payload.
-    const { originalDocumentUrl, amountUah, attachments, ...rest } = income;
+    // Firestore не любить undefined — видаляємо всі такі поля з payload.
     const payload: any = {
-      ...rest,
+      id: income.id,
+      amount: income.amount,
+      currency: income.currency,
+      date: income.date,
+      description: income.description,
+      source: income.source,
       userId: uid,
     };
-    if (originalDocumentUrl) {
-      payload.originalDocumentUrl = originalDocumentUrl;
+
+    // Добавляем только те поля, которые не undefined
+    if (income.originalDocumentUrl) {
+      payload.originalDocumentUrl = income.originalDocumentUrl;
     }
-    if (amountUah !== undefined && amountUah !== null) {
-      payload.amountUah = amountUah;
+    if (income.amountUah !== undefined && income.amountUah !== null) {
+      payload.amountUah = income.amountUah;
     }
-    if (attachments && attachments.length > 0) {
-      payload.attachments = attachments;
+    if (income.attachments && income.attachments.length > 0) {
+      payload.attachments = income.attachments;
+    }
+    if (income.clientOrProject) {
+      payload.clientOrProject = income.clientOrProject;
+    }
+    if (income.comment) {
+      payload.comment = income.comment;
+    }
+    if (income.category) {
+      payload.category = income.category;
     }
 
     await addDoc(incomesRef, payload);

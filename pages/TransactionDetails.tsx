@@ -16,12 +16,12 @@ interface TransactionDetailsProps {
 /**
  * Детальна сторінка окремої транзакції з можливістю редагування та перегляду фото.
  */
-export const TransactionDetails: React.FC<TransactionDetailsProps> = ({ 
-  income, 
-  profile, 
-  onBack, 
+export const TransactionDetails: React.FC<TransactionDetailsProps> = ({
+  income,
+  profile,
+  onBack,
   theme,
-  onUpdate 
+  onUpdate
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -70,6 +70,7 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({
         onClose={() => setIsEditing(false)}
         onSave={handleSave}
         initialData={income}
+        theme={theme}
       />
     );
   }
@@ -79,33 +80,30 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({
       <div className="flex items-center justify-between">
         <button
           onClick={onBack}
-          className={`text-sm transition-colors ${
-            theme === 'dark' 
-              ? 'text-blue-400 hover:text-blue-300' 
-              : 'text-blue-600 hover:text-blue-700'
-          }`}
+          className={`text-sm transition-colors ${theme === 'dark'
+            ? 'text-blue-400 hover:text-blue-300'
+            : 'text-blue-600 hover:text-blue-700'
+            }`}
         >
           ← Назад до списку
         </button>
         <div className="flex gap-2">
           <button
             onClick={() => setIsEditing(true)}
-            className={`p-2 rounded-lg transition-colors ${
-              theme === 'dark' 
-                ? 'text-slate-300 hover:bg-[#1a1a1a] hover:text-white' 
-                : 'text-slate-600 hover:bg-slate-100'
-            }`}
+            className={`p-2 rounded-lg transition-colors ${theme === 'dark'
+              ? 'text-slate-300 hover:bg-[#1a1a1a] hover:text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+              }`}
           >
             <Edit2 size={18} />
           </button>
           <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className={`p-2 rounded-lg transition-colors ${
-              theme === 'dark' 
-                ? 'text-red-400 hover:bg-[#1a1a1a] hover:text-red-300' 
-                : 'text-red-600 hover:bg-red-50'
-            }`}
+            className={`p-2 rounded-lg transition-colors ${theme === 'dark'
+              ? 'text-red-400 hover:bg-[#1a1a1a] hover:text-red-300'
+              : 'text-red-600 hover:bg-red-50'
+              }`}
           >
             <Trash2 size={18} />
           </button>
@@ -228,7 +226,7 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({
 
       {/* Fullscreen Image Viewer */}
       {selectedImage && (
-        <div 
+        <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
           onClick={() => setSelectedImage(null)}
         >
