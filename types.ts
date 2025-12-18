@@ -43,7 +43,7 @@ export interface TaxStatus {
   limitRemaining: number;
 }
 
-export type ViewState = 'login' | 'onboarding' | 'dashboard' | 'reports' | 'settings' | 'transactions' | 'transactionDetails';
+export type ViewState = 'landing' | 'login' | 'onboarding' | 'dashboard' | 'reports' | 'settings' | 'transactions' | 'transactionDetails';
 
 export interface Alert {
   id: string;

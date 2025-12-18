@@ -3,6 +3,7 @@ import { Onboarding } from './pages/Onboarding';
 import { Dashboard } from './pages/Dashboard';
 import { Reports } from './pages/Reports';
 import { Login } from './pages/Login';
+import { LandingPage } from './pages/LandingPage';
 import { Transactions } from './pages/Transactions';
 import { TransactionDetails } from './pages/TransactionDetails';
 import { dbService } from './services/dbService';
@@ -12,7 +13,7 @@ import { LayoutGrid, FileText, Settings, LogOut, Bell, Sun, Moon } from 'lucide-
 
 const App: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [currentView, setCurrentView] = useState<ViewState>('login');
+  const [currentView, setCurrentView] = useState<ViewState>('landing');
   const [selectedIncome, setSelectedIncome] = useState<Income | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
@@ -37,7 +38,7 @@ const App: React.FC = () => {
         }
       } else {
         setProfile(null);
-        setCurrentView('login');
+        setCurrentView('landing');
       }
     });
 
@@ -82,6 +83,14 @@ const App: React.FC = () => {
     setSelectedIncome(income);
     setCurrentView('transactionDetails');
   };
+
+  const handleLandingToLogin = () => {
+    setCurrentView('login');
+  };
+
+  if (currentView === 'landing') {
+    return <LandingPage onLoginSuccess={handleLoginSuccess} onNavigateToLogin={handleLandingToLogin} />;
+  }
 
   if (currentView === 'login') {
     return <Login onLoginSuccess={handleLoginSuccess} />;
