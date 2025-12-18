@@ -1,0 +1,7 @@
+{
+  "name": "Taxify AI",
+  "description": "AI-powered tax assistant for Ukrainian FOPs using Google Gemini for document processing and tax analysis.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
