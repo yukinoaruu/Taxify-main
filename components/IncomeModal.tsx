@@ -221,20 +221,22 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
-              {docUrl && (
-                <div className={`mb-4 p-4 rounded-lg flex items-center gap-3 border-2 ${theme === 'dark'
-                    ? 'bg-blue-900/40 text-blue-100 border-blue-700'
-                    : 'bg-blue-50 text-blue-900 border-blue-300'
+                {docUrl && (
+                  <div className={`mb-4 p-4 rounded-lg flex items-center gap-3 border-2 ${
+                    theme === 'dark' 
+                      ? 'bg-blue-900/40 text-blue-100 border-blue-700' 
+                      : 'bg-blue-50 text-blue-900 border-blue-300'
                   }`}>
-                  <div className={`p-1.5 rounded-full ${theme === 'dark' ? 'bg-blue-800' : 'bg-blue-100'
+                    <div className={`p-1.5 rounded-full ${
+                      theme === 'dark' ? 'bg-blue-800' : 'bg-blue-100'
                     }`}>
-                    <Check size={18} className={theme === 'dark' ? 'text-blue-200' : 'text-blue-600'} />
+                      <Check size={18} className={theme === 'dark' ? 'text-blue-200' : 'text-blue-600'} />
+                    </div>
+                    <p className={`text-sm font-medium ${theme === 'dark' ? 'text-blue-100' : 'text-blue-900'}`}>
+                      Документ розпізнано. Перевірте дані та натисніть "Зберегти".
+                    </p>
                   </div>
-                  <p className={`text-sm font-medium ${theme === 'dark' ? 'text-blue-100' : 'text-blue-900'}`}>
-                    Документ розпізнано. Перевірте дані та натисніть "Зберегти".
-                  </p>
-                </div>
-              )}
+                )}
 
               <div>
                 <label className="block text-xs font-medium text-slate-500 mb-1">Сума</label>

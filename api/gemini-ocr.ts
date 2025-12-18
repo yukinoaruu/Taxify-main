@@ -16,7 +16,7 @@ export default async function handler(request: Request): Promise<Response> {
     const base64Data = base64Image.replace(/^data:image\/(png|jpeg|jpg);base64,/, "");
 
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-3-flash-preview",
       contents: {
         parts: [
           {

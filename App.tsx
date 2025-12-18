@@ -106,7 +106,7 @@ const App: React.FC = () => {
           <nav className="space-y-2">
             <NavItem
               icon={<LayoutGrid size={22} />}
-              label="Головна"
+              label="Огляд"
               active={currentView === 'dashboard'}
               onClick={() => setCurrentView('dashboard')}
               theme={theme}
@@ -146,8 +146,8 @@ const App: React.FC = () => {
           <div className="flex gap-2 mb-4">
             <button
               className={`p-2.5 rounded-lg transition-colors ${theme === 'dark'
-                ? 'text-slate-300 hover:bg-[#1a1a1a] hover:text-white'
-                : 'text-slate-600 hover:bg-slate-100'
+                  ? 'text-slate-300 hover:bg-[#1a1a1a] hover:text-white'
+                  : 'text-slate-600 hover:bg-slate-100'
                 }`}
               aria-label="Notifications"
             >
@@ -155,8 +155,8 @@ const App: React.FC = () => {
             </button>
             <button
               className={`p-2.5 rounded-lg transition-colors ${theme === 'dark'
-                ? 'text-slate-300 hover:bg-[#1a1a1a] hover:text-white'
-                : 'text-slate-600 hover:bg-slate-100'
+                  ? 'text-slate-300 hover:bg-[#1a1a1a] hover:text-white'
+                  : 'text-slate-600 hover:bg-slate-100'
                 }`}
               onClick={toggleTheme}
               aria-label="Toggle theme"
@@ -168,8 +168,8 @@ const App: React.FC = () => {
           <button
             onClick={handleLogout}
             className={`w-full flex items-center gap-2 text-sm px-3 py-2 transition-colors rounded-lg ${theme === 'dark'
-              ? 'text-red-400 hover:text-red-300 hover:bg-[#1a1a1a]'
-              : 'text-red-600 hover:text-red-700 hover:bg-red-50'
+                ? 'text-red-400 hover:text-red-300 hover:bg-[#1a1a1a]'
+                : 'text-red-600 hover:text-red-700 hover:bg-red-50'
               }`}
           >
             <LogOut size={18} /> Вийти
@@ -179,15 +179,15 @@ const App: React.FC = () => {
 
       {/* Mobile Header */}
       <div className={`md:hidden fixed top-0 left-0 right-0 z-20 px-4 py-3 flex justify-between items-center border-b ${theme === 'dark'
-        ? 'bg-black border-[#1a1a1a]'
-        : 'bg-white border-slate-200'
+          ? 'bg-black border-[#1a1a1a]'
+          : 'bg-white border-slate-200'
         }`}>
         <span className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Taxify AI</span>
         <div className="flex items-center gap-2">
           <button
             className={`p-2 rounded-lg transition-colors ${theme === 'dark'
-              ? 'text-slate-300 hover:bg-[#1a1a1a] hover:text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+                ? 'text-slate-300 hover:bg-[#1a1a1a] hover:text-white'
+                : 'text-slate-600 hover:bg-slate-100'
               }`}
             aria-label="Notifications"
           >
@@ -195,8 +195,8 @@ const App: React.FC = () => {
           </button>
           <button
             className={`p-2 rounded-lg transition-colors ${theme === 'dark'
-              ? 'text-slate-300 hover:bg-[#1a1a1a] hover:text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+                ? 'text-slate-300 hover:bg-[#1a1a1a] hover:text-white'
+                : 'text-slate-600 hover:bg-slate-100'
               }`}
             onClick={toggleTheme}
             aria-label="Toggle theme"
@@ -205,8 +205,8 @@ const App: React.FC = () => {
           </button>
           <button
             className={`p-2 rounded-lg transition-colors ${theme === 'dark'
-              ? 'text-slate-300 hover:bg-[#1a1a1a] hover:text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+                ? 'text-slate-300 hover:bg-[#1a1a1a] hover:text-white'
+                : 'text-slate-600 hover:bg-slate-100'
               }`}
             onClick={() => setCurrentView('settings')}
           >
@@ -228,8 +228,8 @@ const App: React.FC = () => {
             <button
               onClick={handleLogout}
               className={`mt-4 px-4 py-2 rounded-lg w-full md:w-auto transition-colors ${theme === 'dark'
-                ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50'
-                : 'bg-red-50 text-red-600 hover:bg-red-100'
+                  ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50'
+                  : 'bg-red-50 text-red-600 hover:bg-red-100'
                 }`}
             >
               Вийти з акаунту
@@ -251,8 +251,8 @@ const App: React.FC = () => {
 
       {/* Mobile Bottom Nav */}
       <div className={`md:hidden fixed bottom-0 left-0 right-0 z-20 flex justify-around p-2 pb-safe border-t ${theme === 'dark'
-        ? 'bg-black border-[#1a1a1a]'
-        : 'bg-white border-slate-200'
+          ? 'bg-black border-[#1a1a1a]'
+          : 'bg-white border-slate-200'
         }`}>
         <MobileNavItem icon={<LayoutGrid size={24} />} label="Головна" active={currentView === 'dashboard'} onClick={() => setCurrentView('dashboard')} theme={theme} />
         <MobileNavItem icon={<FileText size={24} />} label="Транзакції" active={currentView === 'transactions'} onClick={() => setCurrentView('transactions')} theme={theme} />
@@ -267,12 +267,12 @@ const NavItem = ({ icon, label, active, onClick, theme }: any) => (
   <button
     onClick={onClick}
     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-colors ${active
-      ? theme === 'dark'
-        ? 'bg-[#1a1a1a] text-white'
-        : 'bg-blue-50 text-blue-700'
-      : theme === 'dark'
-        ? 'text-slate-300 hover:bg-[#1a1a1a] hover:text-white'
-        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+        ? theme === 'dark'
+          ? 'bg-[#1a1a1a] text-white'
+          : 'bg-blue-50 text-blue-700'
+        : theme === 'dark'
+          ? 'text-slate-300 hover:bg-[#1a1a1a] hover:text-white'
+          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
       }`}
   >
     {icon}
@@ -284,8 +284,8 @@ const MobileNavItem = ({ icon, label, active, onClick, theme }: any) => (
   <button
     onClick={onClick}
     className={`flex flex-col items-center justify-center p-2 rounded-lg ${active
-      ? theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
-      : theme === 'dark' ? 'text-slate-400' : 'text-slate-400'
+        ? theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
+        : theme === 'dark' ? 'text-slate-400' : 'text-slate-400'
       }`}
   >
     {icon}
