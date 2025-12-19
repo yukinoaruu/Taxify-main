@@ -187,7 +187,7 @@ ${conversationHistory ? `Історія розмови:\n${conversationHistory}\
     };
 
     return (
-        <div className={`flex h-[calc(100vh-64px-env(safe-area-inset-bottom))] relative overflow-hidden ${theme === 'dark' ? 'bg-[#1f1f1f] text-white' : 'bg-white text-slate-900'}`}>
+        <div className={`flex flex-1 h-full relative overflow-hidden ${theme === 'dark' ? 'bg-[#1f1f1f] text-white' : 'bg-white text-slate-900'}`}>
 
             {/* Mobile Sidebar Overlay */}
             {isSidebarOpen && (
@@ -249,8 +249,8 @@ ${conversationHistory ? `Історія розмови:\n${conversationHistory}\
             {/* Main Chat Area */}
             <div className="flex-1 flex flex-col relative min-w-0">
                 {/* Mobile Menu Button */}
-                <div className="md:hidden flex items-center p-4 border-b border-[#3a3a3a] dark:bg-[#1f1f1f]">
-                    <button onClick={() => setIsSidebarOpen(true)} className="p-2 -ml-2 text-slate-400">
+                <div className={`md:hidden flex items-center p-4 border-b ${theme === 'dark' ? 'bg-[#1f1f1f] border-[#3a3a3a] text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+                    <button onClick={() => setIsSidebarOpen(true)} className={`p-2 -ml-2 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                         <Menu size={24} />
                     </button>
                     <span className="ml-2 font-semibold">Taxify AI</span>
@@ -294,7 +294,7 @@ ${conversationHistory ? `Історія розмови:\n${conversationHistory}\
                 </div>
 
                 {/* Messages Container */}
-                <div className={`flex-1 overflow-y-auto px-4 md:px-6 pt-6 pb-40 md:pb-32 ${messages.length > 1 ? 'block' : 'hidden'}`} style={{ WebkitOverflowScrolling: 'touch' }}>
+                <div className={`flex-1 overflow-y-auto px-4 md:px-6 pt-6 pb-52 md:pb-40 ${messages.length > 1 ? 'block' : 'hidden'}`} style={{ WebkitOverflowScrolling: 'touch' }}>
                     <div className="max-w-3xl mx-auto space-y-6">
                         {messages.slice(1).map((msg, idx) => (
                             <div key={msg.id} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -325,7 +325,7 @@ ${conversationHistory ? `Історія розмови:\n${conversationHistory}\
                 </div>
 
                 {/* Always Fixed Input Container */}
-                <div className={`absolute bottom-0 md:bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t to-transparent z-50 mb-[74px] md:mb-0 ${theme === 'dark' ? 'from-[#1f1f1f] via-[#1f1f1f]' : 'from-white via-white'
+                <div className={`absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t to-transparent z-50 ${theme === 'dark' ? 'from-[#1f1f1f] via-[#1f1f1f]' : 'from-white via-white'
                     }`}>
                     <div className="max-w-3xl mx-auto">
                         {selectedFiles.length > 0 && (

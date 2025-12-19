@@ -38,6 +38,23 @@ const App: React.FC = () => {
     const unsubscribe = authService.onAuthChange(async (profile) => {
       if (profile) {
         setProfile(profile);
+        // Завантажуємо чати з Firebase
+        try {
+          const remoteChats = await dbService.getChats();
+          if (remoteChats.length > 0) {
+            setChats(remoteChats);
+            // Якщо є активний чат у localStorage, залишаємо його, інакше ставимо перший
+            const savedActiveId = localStorage.getItem(APP_ACTIVE_CHAT_KEY);
+            if (savedActiveId && remoteChats.find(c => c.id === savedActiveId)) {
+              setActiveChatId(savedActiveId);
+            } else {
+              setActiveChatId(remoteChats[0].id);
+            }
+          }
+        } catch (e) {
+          console.error('Failed to sync chats', e);
+        }
+
         if (!profile.isOnboarded) {
           setCurrentView('onboarding');
         } else {
@@ -46,6 +63,7 @@ const App: React.FC = () => {
       } else {
         setProfile(null);
         setCurrentView('landing');
+        setChats([]);
       }
     });
 
@@ -107,6 +125,10 @@ const App: React.FC = () => {
 
     setChats(prev => [newChat, ...prev]);
     setActiveChatId(newChat.id);
+
+    // Save to Firebase
+    dbService.saveChat(newChat).catch(console.error);
+
     return newChat.id;
   };
 
@@ -121,7 +143,12 @@ const App: React.FC = () => {
             newTitle = firstUserMsg.content.slice(0, 30) + (firstUserMsg.content.length > 30 ? '...' : '');
           }
         }
-        return { ...chat, messages, title: newTitle };
+        const updatedChat = { ...chat, messages, title: newTitle };
+
+        // Save to Firebase
+        dbService.saveChat(updatedChat).catch(console.error);
+
+        return updatedChat;
       }
       return chat;
     }));
@@ -132,6 +159,8 @@ const App: React.FC = () => {
     if (activeChatId === chatId) {
       setActiveChatId(null);
     }
+    // Delete from Firebase
+    dbService.deleteChat(chatId).catch(console.error);
   };
 
   const toggleTheme = () => {
@@ -187,7 +216,7 @@ const App: React.FC = () => {
   return (
     <div className={`min-h-screen flex ${theme === 'dark' ? 'bg-[#1f1f1f] text-white' : 'bg-slate-50 text-slate-900'}`}>
       {/* Desktop Sidebar */}
-      <aside className={`hidden md:flex flex-col w-72 fixed h-full z-10 border-r ${theme === 'dark' ? 'bg-[#1f1f1f] border-[#3a3a3a]' : 'bg-white border-slate-200'}`}>
+      <aside className={`hidden md:flex flex-col w-72 fixed top-0 left-0 h-full z-10 border-r ${theme === 'dark' ? 'bg-[#1f1f1f] border-[#3a3a3a]' : 'bg-white border-slate-200'}`}>
         <div className="p-6">
           <div className={`flex items-center gap-3 mb-10 ${theme === 'dark' ? 'text-white' : 'text-blue-700'}`}>
             <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">T</div>
@@ -294,7 +323,8 @@ const App: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center gap-3 p-1 rounded-full pl-5 pr-2 transition-all hover:bg-slate-100 dark:hover:bg-[#2a2a2a]"
+              className={`flex items-center gap-3 p-1 rounded-full pl-5 pr-2 transition-all ${theme === 'dark' ? 'hover:bg-[#2a2a2a]' : 'hover:bg-slate-100'
+                }`}
             >
               <div className="text-right">
                 <p className={`text-sm font-semibold leading-none ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{profile.name}</p>

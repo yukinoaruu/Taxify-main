@@ -186,4 +186,69 @@ export const dbService = {
 
     return alerts;
   },
+
+  /**
+   * Отримати всі чати поточного користувача.
+   */
+  getChats: async (): Promise<any[]> => {
+    const uid = getCurrentUserId();
+    if (!uid) return [];
+
+    const chatsRef = collection(db, "chats");
+    const q = query(chatsRef, where("userId", "==", uid));
+    const snapshot = await getDocs(q);
+
+    const chats: any[] = [];
+    snapshot.forEach((docSnap) => {
+      chats.push({ ...docSnap.data() as any, id: docSnap.data().id || docSnap.id });
+    });
+    // Сортуємо за часом (найновіші зверху)
+    return chats.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  },
+
+  /**
+   * Зберегти/оновити чат у Firestore.
+   */
+  saveChat: async (chat: any): Promise<void> => {
+    const uid = getCurrentUserId();
+    if (!uid) return;
+
+    // Шукаємо існуючий документ чату за його внутрішнім id
+    const chatsRef = collection(db, "chats");
+    const q = query(chatsRef, where("userId", "==", uid), where("id", "==", chat.id));
+    const snapshot = await getDocs(q);
+
+    const payload = {
+      ...chat,
+      userId: uid,
+    };
+
+    if (!snapshot.empty) {
+      // Оновлюємо існуючий
+      const docRef = snapshot.docs[0].ref;
+      await setDoc(docRef, payload, { merge: true });
+    } else {
+      // Створюємо новий
+      await addDoc(chatsRef, payload);
+    }
+  },
+
+  /**
+   * Видалити чат з Firestore.
+   */
+  deleteChat: async (chatId: string): Promise<void> => {
+    const uid = getCurrentUserId();
+    if (!uid) return;
+
+    const chatsRef = collection(db, "chats");
+    const q = query(chatsRef, where("userId", "==", uid), where("id", "==", chatId));
+    const snapshot = await getDocs(q);
+
+    const batchDeletes: Promise<void>[] = [];
+    snapshot.forEach((docSnap) => {
+      batchDeletes.push(deleteDoc(docSnap.ref));
+    });
+
+    await Promise.all(batchDeletes);
+  },
 };
