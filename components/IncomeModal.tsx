@@ -157,7 +157,11 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
           <h2 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>
             {initialData ? 'Редагувати транзакцію' : 'Додати дохід'}
           </h2>
-          <button onClick={onClose} className={theme === 'dark' ? 'text-slate-400 hover:text-slate-300' : 'text-slate-500 hover:text-slate-600'}>
+          <button
+            onClick={onClose}
+            style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+            className={`p-2 min-h-[44px] min-w-[44px] rounded-lg transition-all duration-200 active:scale-95 ${theme === 'dark' ? 'text-slate-400 hover:text-slate-300 hover:bg-[#1a1a1a]' : 'text-slate-500 hover:text-slate-600 hover:bg-slate-100'}`}
+          >
             <X size={20} />
           </button>
         </div>
@@ -167,7 +171,8 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
           {!initialData && (
             <div className={`flex ${theme === 'dark' ? 'bg-[#111111]' : 'bg-slate-100'} p-1 rounded-lg mb-6`}>
               <button
-                className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${mode === 'manual'
+                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                className={`flex-1 py-3 min-h-[48px] text-sm font-medium rounded-md transition-all duration-200 active:scale-95 ${mode === 'manual'
                   ? `${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-white'} shadow text-blue-600`
                   : theme === 'dark' ? 'text-slate-400' : 'text-slate-500'
                   }`}
@@ -176,7 +181,8 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
                 Вручну
               </button>
               <button
-                className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${mode === 'scan'
+                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                className={`flex-1 py-3 min-h-[48px] text-sm font-medium rounded-md transition-all duration-200 active:scale-95 ${mode === 'scan'
                   ? `${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-white'} shadow text-blue-600`
                   : theme === 'dark' ? 'text-slate-400' : 'text-slate-500'
                   }`}
@@ -221,22 +227,20 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
-                {docUrl && (
-                  <div className={`mb-4 p-4 rounded-lg flex items-center gap-3 border-2 ${
-                    theme === 'dark' 
-                      ? 'bg-blue-900/40 text-blue-100 border-blue-700' 
-                      : 'bg-blue-50 text-blue-900 border-blue-300'
+              {docUrl && (
+                <div className={`mb-4 p-4 rounded-lg flex items-center gap-3 border-2 ${theme === 'dark'
+                    ? 'bg-blue-900/40 text-blue-100 border-blue-700'
+                    : 'bg-blue-50 text-blue-900 border-blue-300'
                   }`}>
-                    <div className={`p-1.5 rounded-full ${
-                      theme === 'dark' ? 'bg-blue-800' : 'bg-blue-100'
+                  <div className={`p-1.5 rounded-full ${theme === 'dark' ? 'bg-blue-800' : 'bg-blue-100'
                     }`}>
-                      <Check size={18} className={theme === 'dark' ? 'text-blue-200' : 'text-blue-600'} />
-                    </div>
-                    <p className={`text-sm font-medium ${theme === 'dark' ? 'text-blue-100' : 'text-blue-900'}`}>
-                      Документ розпізнано. Перевірте дані та натисніть "Зберегти".
-                    </p>
+                    <Check size={18} className={theme === 'dark' ? 'text-blue-200' : 'text-blue-600'} />
                   </div>
-                )}
+                  <p className={`text-sm font-medium ${theme === 'dark' ? 'text-blue-100' : 'text-blue-900'}`}>
+                    Документ розпізнано. Перевірте дані та натисніть "Зберегти".
+                  </p>
+                </div>
+              )}
 
               <div>
                 <label className="block text-xs font-medium text-slate-500 mb-1">Сума</label>
@@ -361,7 +365,8 @@ export const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSav
 
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl shadow-lg shadow-blue-600/20 transition-all active:scale-[0.98] mt-4"
+                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-4 min-h-[52px] rounded-xl shadow-lg shadow-blue-600/20 transition-all duration-200 active:scale-[0.98] mt-4"
               >
                 Зберегти
               </button>

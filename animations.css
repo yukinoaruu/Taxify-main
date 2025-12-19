@@ -1,0 +1,223 @@
+/* Taxify Smooth Animations */
+
+/* Global smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Base transitions for all interactive elements */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Fade in animation for page content */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide in from bottom for modals */
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Slide in from right for side panels */
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Scale animation for buttons */
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Pulse animation for notifications */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Shimmer loading animation */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Apply fade in to main content areas */
+.page-content {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Modal animations */
+.modal-backdrop {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+  animation: slideInFromBottom 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+/* Card hover effects */
+.card-interactive {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.card-interactive:hover {
+  transform: translateY(-2px);
+}
+
+.card-interactive:active {
+  transform: translateY(0);
+}
+
+/* Button press animation */
+.btn-press {
+  transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-press:active {
+  transform: scale(0.98);
+}
+
+/* Smooth theme transitions */
+.theme-transition {
+  transition: background-color 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease;
+}
+
+/* Loading spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Typing indicator for chat */
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px);
+  }
+}
+
+.typing-dot {
+  animation: typing 1.4s infinite;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Smooth list item animations */
+.list-item {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+.list-item:nth-child(1) { animation-delay: 0.05s; }
+.list-item:nth-child(2) { animation-delay: 0.1s; }
+.list-item:nth-child(3) { animation-delay: 0.15s; }
+.list-item:nth-child(4) { animation-delay: 0.2s; }
+.list-item:nth-child(5) { animation-delay: 0.25s; }
+
+/* Progress bar animation */
+@keyframes progressBar {
+  from {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  to {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+.progress-bar {
+  animation: progressBar 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Toast notification slide in */
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toast {
+  animation: slideInFromTop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Hardware acceleration hints */
+.hw-accelerate {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}

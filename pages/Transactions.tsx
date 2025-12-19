@@ -61,59 +61,67 @@ export const Transactions: React.FC<TransactionsProps> = ({ profile, onOpenDetai
 
   const textColor = theme === 'dark' ? 'text-white' : 'text-slate-900';
   const textMuted = theme === 'dark' ? 'text-slate-400' : 'text-slate-500';
-  const bgCard = theme === 'dark' ? 'bg-[#0a0a0a] border-[#1a1a1a]' : 'bg-white border-slate-100';
-  const bgMuted = theme === 'dark' ? 'bg-[#111111]' : 'bg-slate-50';
+  const bgCard = theme === 'dark' ? 'bg-[#2a2a2a] border-[#3a3a3a]' : 'bg-white border-slate-100';
+  const bgMuted = theme === 'dark' ? 'bg-[#333333]' : 'bg-slate-50';
 
   return (
-    <div className={`p-6 md:p-10 space-y-8 pb-24 ${theme === 'dark' ? 'bg-black' : 'bg-slate-50'}`}>
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className={`text-2xl font-bold ${textColor}`}>Транзакції</h1>
-          <p className={`${textMuted} text-sm`}>
-            Усі доходи ФОП для профілю {profile.name}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <select
-            className={`border rounded-lg px-3 py-2 text-sm ${theme === 'dark'
-                ? 'bg-[#0a0a0a] border-[#1a1a1a] text-white'
-                : 'bg-white border-slate-200 text-slate-900'
-              }`}
-            value={monthFilter}
-            onChange={(e) => setMonthFilter(e.target.value)}
-          >
-            <option value="all">Всі місяці</option>
-            {monthOptions.map((m) => (
-              <option key={m} value={m}>
-                {m}
-              </option>
-            ))}
-          </select>
-          <button
-            className={`border rounded-lg px-3 py-2 text-sm transition-colors ${theme === 'dark'
-                ? 'bg-[#0a0a0a] border-[#1a1a1a] text-white hover:bg-[#1a1a1a]'
-                : 'bg-white border-slate-200 text-slate-900 hover:bg-slate-50'
-              }`}
-            onClick={() => setSortByAmountDesc((prev) => !prev)}
-          >
-            Сума: {sortByAmountDesc ? 'від більшої' : 'від меншої'}
-          </button>
-        </div>
-      </div>
+    <div className="container mx-auto p-4 max-w-5xl">
+      <h1 className={`text-3xl font-bold mb-6 ${textColor}`}>Транзакції</h1>
 
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex-1 grid grid-cols-1 gap-3">
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex-grow space-y-4">
+          <div className={`flex flex-col sm:flex-row gap-4 ${bgCard} border rounded-xl p-4`}>
+            <div className="flex-grow">
+              <label htmlFor="monthFilter" className={`block text-xs ${textMuted} mb-1`}>
+                Фільтр за місяцем
+              </label>
+              <select
+                id="monthFilter"
+                value={monthFilter}
+                onChange={(e) => setMonthFilter(e.target.value)}
+                className={`w-full border rounded-lg px-2 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-600 ${theme === 'dark'
+                  ? 'bg-[#333333] border-[#3a3a3a] text-white'
+                  : 'bg-white border-slate-200 text-slate-900'
+                  }`}
+              >
+                <option value="all">Всі місяці</option>
+                {monthOptions.map((month) => (
+                  <option key={month} value={month}>
+                    {new Date(month + '-01').toLocaleString('uk-UA', { year: 'numeric', month: 'long' })}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex-grow">
+              <label htmlFor="sortByAmount" className={`block text-xs ${textMuted} mb-1`}>
+                Сортувати за сумою
+              </label>
+              <select
+                id="sortByAmount"
+                value={sortByAmountDesc ? 'desc' : 'asc'}
+                onChange={(e) => setSortByAmountDesc(e.target.value === 'desc')}
+                className={`w-full border rounded-lg px-2 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-600 ${theme === 'dark'
+                  ? 'bg-[#333333] border-[#3a3a3a] text-white'
+                  : 'bg-white border-slate-200 text-slate-900'
+                  }`}
+              >
+                <option value="desc">Від більшого до меншого</option>
+                <option value="asc">Від меншого до більшого</option>
+              </select>
+            </div>
+          </div>
+
           {filtered.length === 0 ? (
-            <p className={`${textMuted} text-sm text-center py-8`}>
-              Транзакцій за обраними фільтрами немає.
-            </p>
+            <p className={`text-center py-8 ${textMuted}`}>
+              Немає транзакцій за вибраними фільтрами.
+            </p >
           ) : (
             filtered.map((inc) => (
               <div
                 key={inc.id}
-                className={`${bgCard} border rounded-xl p-4 flex items-center justify-between transition cursor-pointer overflow-hidden ${theme === 'dark'
-                    ? 'hover:bg-slate-700'
-                    : 'hover:shadow-sm hover:bg-slate-50'
+                className={`${bgCard} border rounded-2xl p-4 flex items-center justify-between transition-all duration-300 cursor-pointer overflow-hidden ${theme === 'dark'
+                  ? 'hover:bg-[#333333] hover:border-[#4a4a4a] hover:shadow-lg shadow-black/20'
+                  : 'hover:shadow-md hover:bg-slate-50 hover:border-blue-200'
                   }`}
                 onClick={() => {
                   if (hasLongPressed) return;
@@ -169,42 +177,45 @@ export const Transactions: React.FC<TransactionsProps> = ({ profile, onOpenDetai
                   }
                 }}
               >
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${theme === 'dark'
-                      ? 'bg-blue-900/30 text-blue-400'
-                      : 'bg-blue-50 text-blue-600'
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg transition-colors ${theme === 'dark'
+                    ? 'bg-[#1f1f1f] text-blue-400'
+                    : 'bg-blue-50 text-blue-600'
                     }`}>
                     {inc.currency === 'UAH' ? '₴' : inc.currency === 'USD' ? '$' : '€'}
                   </div>
                   <div>
-                    <p className={`font-medium ${textColor}`}>
+                    <p className={`font-semibold md:text-lg ${textColor}`}>
                       {inc.description || 'Дохід'}
                     </p>
-                    <p className={`text-xs ${textMuted}`}>{inc.date}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <p className={`text-xs md:text-sm font-medium ${textMuted}`}>{inc.date}</p>
+                      <span className={`w-1 h-1 rounded-full ${theme === 'dark' ? 'bg-slate-700' : 'bg-slate-300'}`} />
+                      <p className={`text-[10px] md:text-xs font-semibold px-2 py-0.5 rounded-full ${theme === 'dark'
+                        ? 'text-blue-400 bg-blue-900/30'
+                        : 'text-blue-600 bg-blue-50'
+                        }`}>
+                        {inc.source === 'ai-scan' ? 'AI' : 'Вручну'}
+                      </p>
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-right">
-                    <p className={`font-bold ${textColor}`}>
-                      +{inc.amount.toLocaleString()} {inc.currency}
+                    <p className={`font-bold text-lg md:text-xl ${textColor}`}>
+                      +{inc.amount.toLocaleString()} <span className="text-sm font-medium opacity-70">{inc.currency}</span>
                     </p>
                     {inc.amountUah && (
-                      <p className={`text-xs ${textMuted}`}>
-                        ≈ ₴ {inc.amountUah.toFixed(2)}
+                      <p className={`text-xs md:text-sm font-medium opacity-60 ${textColor}`}>
+                        ≈ ₴ {inc.amountUah.toFixed(0)}
                       </p>
                     )}
-                    <p className={`text-xs px-2 py-0.5 rounded-full inline-block mt-0.5 ${theme === 'dark'
-                        ? 'text-blue-400 bg-blue-900/30'
-                        : 'text-blue-600 bg-blue-50'
-                      }`}>
-                      {inc.source === 'ai-scan' ? 'AI' : 'Вручну'}
-                    </p>
                   </div>
                 </div>
               </div>
             ))
           )}
-        </div>
+        </div >
 
         <div className={`w-full md:w-72 ${bgCard} border rounded-xl p-4 space-y-3`}>
           <p className={`text-xs font-semibold ${textMuted} uppercase tracking-wide`}>
@@ -217,9 +228,9 @@ export const Transactions: React.FC<TransactionsProps> = ({ profile, onOpenDetai
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className={`w-full border rounded-lg px-2 py-1.5 text-sm ${theme === 'dark'
-                    ? 'bg-[#111111] border-[#1a1a1a] text-white'
-                    : 'bg-white border-slate-200 text-slate-900'
+                className={`w-full border rounded-lg px-2 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-600 ${theme === 'dark'
+                  ? 'bg-[#333333] border-[#3a3a3a] text-white'
+                  : 'bg-white border-slate-200 text-slate-900'
                   }`}
               />
             </div>
@@ -229,17 +240,17 @@ export const Transactions: React.FC<TransactionsProps> = ({ profile, onOpenDetai
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className={`w-full border rounded-lg px-2 py-1.5 text-sm ${theme === 'dark'
-                    ? 'bg-[#111111] border-[#1a1a1a] text-white'
-                    : 'bg-white border-slate-200 text-slate-900'
+                className={`w-full border rounded-lg px-2 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-600 ${theme === 'dark'
+                  ? 'bg-[#333333] border-[#3a3a3a] text-white'
+                  : 'bg-white border-slate-200 text-slate-900'
                   }`}
               />
             </div>
           </div>
           <button
             className={`w-full text-xs mt-2 transition-colors ${theme === 'dark'
-                ? 'text-slate-400 hover:text-slate-300'
-                : 'text-slate-500 hover:text-slate-700'
+              ? 'text-slate-400 hover:text-slate-300'
+              : 'text-slate-500 hover:text-slate-700'
               }`}
             onClick={() => {
               setFromDate('');
@@ -250,8 +261,7 @@ export const Transactions: React.FC<TransactionsProps> = ({ profile, onOpenDetai
             Скинути фільтри
           </button>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
-

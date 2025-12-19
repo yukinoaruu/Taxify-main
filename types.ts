@@ -43,11 +43,25 @@ export interface TaxStatus {
   limitRemaining: number;
 }
 
-export type ViewState = 'landing' | 'login' | 'onboarding' | 'dashboard' | 'reports' | 'settings' | 'transactions' | 'transactionDetails';
-
 export interface Alert {
   id: string;
   type: 'warning' | 'info' | 'success' | 'danger';
   message: string;
   date: string;
 }
+
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: number;
+}
+
+export interface Chat {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  timestamp: number;
+}
+
+export type ViewState = 'landing' | 'login' | 'onboarding' | 'dashboard' | 'reports' | 'settings' | 'transactions' | 'transactionDetails' | 'taxAdvisor';

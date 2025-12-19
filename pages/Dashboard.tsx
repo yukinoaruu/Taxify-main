@@ -121,16 +121,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile, theme }) => {
   // Chart Data
   const limitData = [
     { name: 'Використано', value: limitUsed, color: '#2563eb' },
-    { name: 'Залишилось', value: limitRemaining, color: theme === 'dark' ? '#1e293b' : '#e2e8f0' },
+    { name: 'Залишилось', value: limitRemaining, color: theme === 'dark' ? '#3a3a3a' : '#e2e8f0' },
   ];
 
   const textColor = theme === 'dark' ? 'text-white' : 'text-slate-900';
   const textMuted = theme === 'dark' ? 'text-slate-400' : 'text-slate-500';
-  const bgCard = theme === 'dark' ? 'bg-[#0a0a0a] border-[#1a1a1a]' : 'bg-white border-slate-100';
-  const bgMuted = theme === 'dark' ? 'bg-[#111111]' : 'bg-slate-50';
+  const bgCard = theme === 'dark' ? 'bg-[#2a2a2a] border-[#3a3a3a]' : 'bg-white border-slate-100';
+  const bgMuted = theme === 'dark' ? 'bg-[#333333]' : 'bg-slate-50';
 
   return (
-    <div className={`p-6 md:p-10 space-y-8 pb-24 ${theme === 'dark' ? 'bg-black' : 'bg-slate-50'}`}>
+    <div className={`p-6 md:p-10 space-y-8 pb-24 ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-slate-50'}`}>
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
@@ -139,7 +139,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile, theme }) => {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-blue-600 text-white px-4 py-3 md:px-6 md:py-3.5 rounded-xl shadow-lg shadow-blue-600/30 hover:bg-blue-700 transition-all flex items-center gap-2 text-base md:text-lg font-medium"
+          style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+          className="bg-blue-600 text-white px-5 py-4 md:px-6 md:py-4 min-h-[52px] rounded-xl shadow-lg shadow-blue-600/30 hover:bg-blue-700 transition-all duration-200 active:scale-[0.98] flex items-center gap-2 text-base md:text-lg font-medium"
         >
           <Plus size={22} />
           <span className="hidden md:inline">Додати дохід</span>
@@ -183,12 +184,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile, theme }) => {
         <div className="flex gap-3">
           <button
             onClick={() => setPeriod('month')}
-            className={`px-6 py-2.5 rounded-lg text-base font-medium transition-colors ${period === 'month'
+            style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+            className={`px-6 py-3 min-h-[48px] rounded-lg text-base font-medium transition-all duration-200 active:scale-95 ${period === 'month'
               ? theme === 'dark'
                 ? 'bg-white text-black'
                 : 'bg-blue-600 text-white'
               : theme === 'dark'
-                ? 'bg-[#1a1a1a] text-slate-300 hover:bg-[#222222]'
+                ? 'bg-[#2a2a2a] text-slate-300 hover:bg-[#333333] border border-[#3a3a3a]'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
           >
@@ -196,12 +198,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile, theme }) => {
           </button>
           <button
             onClick={() => setPeriod('year')}
-            className={`px-6 py-2.5 rounded-lg text-base font-medium transition-colors ${period === 'year'
+            style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+            className={`px-6 py-3 min-h-[48px] rounded-lg text-base font-medium transition-all duration-200 active:scale-95 ${period === 'year'
               ? theme === 'dark'
                 ? 'bg-white text-black'
                 : 'bg-blue-600 text-white'
               : theme === 'dark'
-                ? 'bg-[#1a1a1a] text-slate-300 hover:bg-[#222222]'
+                ? 'bg-[#2a2a2a] text-slate-300 hover:bg-[#333333] border border-[#3a3a3a]'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
           >
@@ -232,7 +235,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile, theme }) => {
               <TrendingUp size={24} />
             </div>
           </div>
-          <div className={`w-full rounded-full h-2 mt-3 ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-slate-100'}`}>
+          <div className={`w-full rounded-full h-2 mt-3 ${theme === 'dark' ? 'bg-[#333333]' : 'bg-slate-100'}`}>
             <div
               className="bg-emerald-500 h-2 rounded-full transition-all"
               style={{ width: `${limitPercent.toFixed(0)}%` }}
